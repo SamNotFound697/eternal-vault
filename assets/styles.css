@@ -1,0 +1,268 @@
+/* assets/styles.css
+   Global styles for Realms site (mobile-first, responsive, modern glass/neon hybrid)
+*/
+
+/* Reset / base */
+:root{
+  --bg-1: #0d0f13;
+  --bg-2: #111217;
+  --card-bg: rgba(255,255,255,0.05);
+  --muted: rgba(255,255,255,0.65);
+  --accent-a: #7df9ff;
+  --accent-b: #c084fc;
+  --accent-c: #ff8fa3;
+  --glass-border: rgba(255,255,255,0.10);
+  --glass-border-2: rgba(255,255,255,0.06);
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --max-width: 1200px;
+  --gap: 20px;
+  --shadow-weak: 0 6px 18px rgba(0,0,0,0.45);
+  --shadow-strong: 0 18px 40px rgba(0,0,0,0.55);
+  --text-on-dark: #eef2ff;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", monospace;
+}
+
+/* Basic page */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  min-height:100%;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(124,249,255,0.03), transparent 6%),
+    radial-gradient(circle at 85% 80%, rgba(255,143,163,0.03), transparent 8%),
+    linear-gradient(180deg,var(--bg-1),var(--bg-2) 60%);
+  color:var(--text-on-dark);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.35;
+  -webkit-tap-highlight-color: transparent;
+  padding-bottom:60px;
+}
+
+/* Layout helper */
+.container{
+  width:calc(100% - 32px);
+  max-width:var(--max-width);
+  margin:0 auto;
+}
+
+/* Header (used on realm pages) */
+header{
+  padding:34px 16px 18px;
+  text-align:center;
+  margin-bottom:6px;
+}
+header h1{
+  margin:0;
+  font-size:clamp(1.6rem,4vw,2.6rem);
+  letter-spacing:-0.6px;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--accent-a),var(--accent-b),var(--accent-c));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 6px 20px rgba(0,0,0,0.5));
+}
+header p{
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:0.97rem;
+}
+
+/* Feed grid used on realms */
+.feed-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+  gap:var(--gap);
+  padding:18px;
+  width:100%;
+  margin:0 auto;
+  max-width:var(--max-width);
+}
+
+/* Card design */
+.card{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:12px;
+  padding:16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border-radius:12px;
+  border:1px solid var(--glass-border);
+  box-shadow:var(--shadow-weak);
+  transition: transform .22s cubic-bezier(.2,.9,.25,1), box-shadow .22s;
+  min-height:120px;
+  overflow:hidden;
+  word-break:break-word;
+}
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:var(--shadow-strong);
+  border-color: var(--glass-border-2);
+}
+
+/* Card top row: thumbnail or icon */
+.card-thumb{
+  width:100%;
+  height:140px;
+  border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.card-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* File metadata row */
+.card-meta{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+}
+.file-icon{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.04);
+}
+.meta-text{
+  flex:1;
+  min-width:0;
+}
+.meta-title{
+  font-weight:600;
+  font-size:0.98rem;
+  color:var(--text-on-dark);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.meta-sub{
+  margin-top:4px;
+  font-size:0.86rem;
+  color:var(--muted);
+}
+
+/* Action row */
+.card-actions{
+  margin-top:auto;
+  display:flex;
+  gap:10px;
+  width:100%;
+  align-items:center;
+  justify-content:space-between;
+}
+.btn{
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:600;
+  font-size:0.9rem;
+  background:linear-gradient(90deg,var(--accent-a),var(--accent-b));
+  border:none;
+  color:#071018;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.btn.secondary{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.06);
+  color:var(--text-on-dark);
+}
+
+/* Empty state */
+.empty{
+  padding:48px;
+  text-align:center;
+  color:var(--muted);
+  font-size:1rem;
+}
+
+/* Landing page specific */
+.hero {
+  padding:42px 16px 6px;
+  text-align:center;
+}
+.hero .subtitle{
+  color:var(--muted);
+  margin-top:8px;
+  font-size:1.02rem;
+}
+
+/* Realm card on landing (reuse classes but different look) */
+.realm-card {
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  padding:20px;
+  border-radius:var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border:1px solid var(--glass-border);
+  transition: transform .22s, box-shadow .22s;
+  text-align:center;
+  min-height:170px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.realm-card:hover{ transform:translateY(-6px); box-shadow:var(--shadow-strong)}
+
+/* Landing icons inside realm-card */
+.realm-card .realm-icon{
+  width:68px;
+  height:68px;
+  opacity:0.95;
+  margin-bottom:12px;
+}
+
+/* Responsive tweaks */
+@media (max-width:720px){
+  .feed-grid{ grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:14px; padding:14px;}
+  .card-thumb{ height:110px; }
+  .card{ padding:12px; border-radius:10px; min-height:110px;}
+  .realm-card{ min-height:150px; padding:16px; border-radius:14px;}
+}
+
+/* File type color markers (apply to file-icon container via class) */
+.ft-image{ background: linear-gradient(180deg, rgba(125,249,255,0.08), rgba(125,249,255,0.02)); }
+.ft-video{ background: linear-gradient(180deg, rgba(192,132,252,0.08), rgba(192,132,252,0.02)); }
+.ft-audio{ background: linear-gradient(180deg, rgba(255,143,163,0.08), rgba(255,143,163,0.02)); }
+.ft-archive{ background: linear-gradient(180deg, rgba(200,200,200,0.04), rgba(200,200,200,0.01)); }
+.ft-app{ background: linear-gradient(180deg, rgba(255,210,130,0.06), rgba(255,210,130,0.01)); }
+.ft-file{ background: linear-gradient(180deg, rgba(180,180,250,0.04), rgba(180,180,250,0.01)); }
+.ft-secret{ background: linear-gradient(180deg, rgba(120,255,190,0.06), rgba(120,255,190,0.01)); }
+
+/* Utility helpers */
+.row{ display:flex; gap:12px; align-items:center; }
+.center{ display:flex; align-items:center; justify-content:center; }
+.small{ font-size:0.85rem; color:var(--muted); }
+.kicker{ font-size:0.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+
+/* 404 page */
+.page-404{
+  min-height:60vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:14px;
+  padding:40px 20px;
+}
