@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realms</title>
+
+    <link rel="stylesheet" href="/assets/styles.css">
+
+    <style>
+        /* --- PAGE-SPECIFIC VISUAL MAGIC FOR LANDING ONLY --- */
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 30% 20%, #1d1f27, #0d0f13 70%);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        .hero-title {
+            text-align: center;
+            margin-top: 70px;
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #7df9ff, #c084fc, #ff8fa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px #7df9ff); }
+            to   { filter: drop-shadow(0 0 18px #ff8fa3); }
+        }
+
+        .subtext {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+
+        .realms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 28px;
+            padding: 60px 8% 120px;
+        }
+
+        .realm-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 28px;
+            text-align: center;
+            backdrop-filter: blur(14px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+        }
+
+        .realm-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
+
+        .realm-card h2 {
+            margin-top: 18px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .realm-icon {
+            width: 70px;
+            height: 70px;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="hero-title">Enter the Six Realms</h1>
+    <div class="subtext">Choose your world</div>
+
+    <div class="realms-grid">
+
+        <a href="/realms/visuals.html" class="realm-card">
+            <img src="/assets/icons/image.svg" class="realm-icon">
+            <h2>Visuals</h2>
+        </a>
+
+        <a href="/realms/games.html" class="realm-card">
+            <img src="/assets/icons/exe.svg" class="realm-icon">
+            <h2>Games</h2>
+        </a>
+
+        <a href="/realms/movies.html" class="realm-card">
+            <img src="/assets/icons/video.svg" class="realm-icon">
+            <h2>Movies</h2>
+        </a>
+
+        <a href="/realms/music.html" class="realm-card">
+            <img src="/assets/icons/audio.svg" class="realm-icon">
+            <h2>Music</h2>
+        </a>
+
+        <a href="/realms/memes.html" class="realm-card">
+            <img src="/assets/icons/file.svg" class="realm-icon">
+            <h2>Memes</h2>
+        </a>
+
+        <a href="/realms/secrets.html" class="realm-card">
+            <img src="/assets/icons/secret.svg" class="realm-icon">
+            <h2>Secrets</h2>
+        </a>
+
+    </div>
+
+    <footer>
+        Powered by Yandex • Served by Netlify
+    </footer>
+
+    <script src="/assets/main.js"></script>
+</body>
+</html>
