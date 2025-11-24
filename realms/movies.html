@@ -10,7 +10,7 @@
 
 <header class="realm-header">
     <h1 class="realm-title">Movies</h1>
-    <p class="realm-subtitle">Long-form videos and films.</p>
+    <p class="realm-subtitle">MP4, MKV, WEBM — all films & clips.</p>
 </header>
 
 <main>
@@ -21,9 +21,7 @@
     <div id="realm-feed" class="feed-grid"></div>
 </main>
 
-<script>
-    window.REALM = "movies";
-</script>
+<script> window.REALM = "movies"; </script>
 
 <script type="module">
     import { listFiles, listFolders, createFolder, fileURL } from "../assets/main.js";
@@ -64,7 +62,6 @@
 
         const ok = await createFolder(window.REALM, name);
         if (ok) loadRealm();
-        else alert("Failed");
     });
 
     loadRealm();
