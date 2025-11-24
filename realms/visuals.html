@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visuals Realm</title>
+    <title>Visuals</title>
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
@@ -14,12 +14,10 @@
 </header>
 
 <main>
-    <!-- Folder creation button -->
     <section class="control-panel">
-        <button id="create-folder-btn" class="btn-primary">+ New Folder</button>
+        <button id="create-folder-btn" class="btn">+ New Folder</button>
     </section>
 
-    <!-- File grid -->
     <div id="realm-feed" class="feed-grid"></div>
 </main>
 
@@ -30,58 +28,48 @@
 <script type="module">
     import { 
         listFiles, 
-        listFolders,
-        createFolder,
+        listFolders, 
+        createFolder, 
         fileURL 
     } from "../assets/main.js";
 
     const feed = document.getElementById("realm-feed");
-    const createFolderBtn = document.getElementById("create-folder-btn");
+    const btn = document.getElementById("create-folder-btn");
 
-    /* ---------------------
-       Load folders + files
-    ---------------------- */
     async function loadRealm() {
         feed.innerHTML = "";
 
         const folders = await listFolders(window.REALM);
         const files = await listFiles(window.REALM);
 
-        /* ---------- Folders ---------- */
         folders.forEach(folder => {
-            const card = document.createElement("a");
-            card.className = "folder-card";
-            card.href = `${folder.name}/index.html`;
-            card.textContent = folder.name;
-
-            feed.appendChild(card);
+            const el = document.createElement("a");
+            el.className = "folder-card";
+            el.href = `./${folder.name}/`;
+            el.textContent = folder.name;
+            feed.appendChild(el);
         });
 
-        /* ---------- Files ---------- */
         files.forEach(f => {
             const url = fileURL(`${window.REALM}/${f.name}`);
 
-            const card = document.createElement("a");
-            card.className = "file-card";
-            card.href = url;
-            card.target = "_blank";
-            card.rel = "noopener";
-            card.textContent = f.name;
-
-            feed.appendChild(card);
+            const el = document.createElement("a");
+            el.className = "file-card";
+            el.href = url;
+            el.target = "_blank";
+            el.rel = "noopener";
+            el.textContent = f.name;
+            feed.appendChild(el);
         });
     }
 
-    /* ---------------------
-       Folder Creation
-    ---------------------- */
-    createFolderBtn.addEventListener("click", async () => {
-        const name = prompt("Enter folder name:");
+    btn.addEventListener("click", async () => {
+        const name = prompt("Folder name:");
         if (!name) return;
 
         const ok = await createFolder(window.REALM, name);
         if (ok) loadRealm();
-        else alert("Error creating folder");
+        else alert("Failed");
     });
 
     loadRealm();
