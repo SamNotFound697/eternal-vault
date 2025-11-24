@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 • Realm Not Found</title>
+
+    <link rel="stylesheet" href="/assets/styles.css">
+
+    <style>
+        body {
+            background: #0d0f13;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        p {
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        a {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-decoration: none;
+            color: white;
+            background: rgba(255,255,255,0.06);
+            transition: 0.2s;
+        }
+        a:hover {
+            background: rgba(255,255,255,0.15);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>404</h1>
+    <p>This Realm does not exist.</p>
+
+    <a href="/">Return to Realms</a>
+
+    <script>
+        // Automatic fallback for SPA-like navigation on static hosts
+        // If user loads /realms/visuals.html directly and host fails, redirect back.
+        setTimeout(() => {
+            if (location.pathname !== "/") {
+                // Optionally auto-redirect:
+                // window.location.href = "/";
+            }
+        }, 2000);
+    </script>
+
+</body>
+</html>
