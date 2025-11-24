@@ -1,94 +1,199 @@
 /* ============================================================
-   Realm Feed v2 (for list-files.js)
-   Supports: images, videos, audio, generic files
+   REALMS — Mysterious Anime Night × YouTube Feed (2025 Edition)
    ============================================================ */
 
-.file-card {
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.04),
-    rgba(255,255,255,0.02)
-  );
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  transition: transform .22s, box-shadow .22s;
-  box-shadow: var(--shadow-weak);
-  overflow: hidden;
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&family=JetBrains+Mono&display=swap');
+
+/* ───── BASE & YOUR SIGNATURE VIBE ───── */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: linear-gradient(135deg, #0d0c1d, #1a1a2e);
+  color: #e0e0ff;
+  font-family: 'Rubik', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
 }
 
-.file-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-strong);
-  border-color: var(--glass-border-2);
-}
-
-.file-thumb {
-  width: 100%;
-  height: 180px;
-  border-radius: 10px;
-  object-fit: cover;
-  background: rgba(255,255,255,0.04);
-}
-
-.file-card video.file-thumb {
-  object-fit: cover;
+/* Starfield (optional — add <div class="stars"></div> to any page if you want it) */
+.stars {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
   pointer-events: none;
+  z-index: 0;
+}
+.star {
+  position: absolute;
+  background: #fff;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  animation: twinkle 4s infinite ease-in-out;
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0.2; }
+  50% { opacity: 1; }
 }
 
-.file-link {
-  color: inherit;
+/* ───── CONTAINER & LAYOUT ───── */
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
+
+/* ───── HEADER (your glowing neon title) ───── */
+.realm-header {
+  text-align: center;
+  padding: 60px 20px 40px;
+}
+.realm-title {
+  font-size: 4rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff6ec4, #7df9ff, #7873f5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(125, 249, 255, 0.5);
+  animation: glow 4s ease-in-out infinite alternate;
+}
+.realm-subtitle {
+  color: #aaa;
+  margin-top: 12px;
+  font-size: 1.1rem;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 20px #7df9ff; }
+  to   { text-shadow: 0 0 40px #ff6ec4, 0 0 60px #7873f5; }
+}
+
+/* ───── FEED GRID (YouTube style) ───── */
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+}
+
+/* Cards base */
+.file-card, .folder-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  backdrop-filter: blur(8px);
   text-decoration: none;
-  display: block;
+  color: #e0e0ff;
+}
+.file-card:hover, .folder-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
+              0 0 30px rgba(125, 249, 255, 0.3);
+  border-color: #7df9ff;
 }
 
-.file-name {
-  font-size: 0.9rem;
-  font-weight: 600;
-  word-break: break-all;
-  margin-top: 6px;
-  color: var(--text-on-dark);
-  opacity: 0.92;
-}
-
-/* Generic file types (audio, archive, unknown, etc.) */
-.file-generic {
+/* Thumbnails */
+.file-card img, .file-card video {
   width: 100%;
-  height: 180px;
-  border-radius: 10px;
-  border: 1px dashed rgba(255,255,255,0.08);
+  height: 190px;
+  object-fit: cover;
+  background: #000;
+}
+.file-card video {
+  object-fit: contain;
+  background: #111;
+}
+
+/* Generic file icon fallback */
+.file-icon {
+  width: 100%;
+  height: 190px;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.75;
-  font-size: 1rem;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.02),
-    rgba(0,0,0,0.05)
-  );
+  font-size: 4rem;
+  background: rgba(255,255,255,0.05);
 }
 
-.file-generic.audio {
-  font-size: 1.2rem;
+/* Folder cards */
+.folder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 190px;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.folder-icon {
+  font-size: 5rem;
+  margin-bottom: 12px;
   opacity: 0.9;
-  background: linear-gradient(
-    180deg,
-    rgba(255,143,163,0.10),
-    rgba(255,143,163,0.04)
-  );
 }
 
+/* File name overlay */
+.file-name {
+  padding: 14px;
+  text-align: center;
+  background: rgba(0,0,0,0.5);
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
+}
 
-/* Responsive tweaks */
-@media (max-width: 720px) {
-  .file-thumb {
-    height: 140px;
-  }
-  .file-generic {
-    height: 140px;
-  }
+/* ───── CONTROLS & BREADCRUMBS ───── */
+.controls {
+  display: flex;
+  gap: 14px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  padding: 12px 28px;
+  background: linear-gradient(45deg, #ff6ec4, #7873f5);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(255, 107, 196, 0.4);
+}
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 196, 0.6);
+}
+.btn.secondary {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+
+.breadcrumb {
+  padding: 16px 0;
+  color: #7df9ff;
+  font-size: 1rem;
+  text-align: center;
+}
+.breadcrumb a {
+  color: #ff6ec4;
+  text-decoration: underline;
+}
+
+/* Empty state */
+.empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 100px 20px;
+  color: #777;
+  font-size: 1.5rem;
+}
+
+/* ───── RESPONSIVE ───── */
+@media (max-width: 768px) {
+  .realm-title { font-size: 2.8rem; }
+  .feed-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+  .file-card img, .file-card video, .folder-card { height: 160px; }
 }
