@@ -8,95 +8,112 @@
 </head>
 <body>
 
-<header class="realm-header">
-  <h1 class="realm-title">Memes</h1>                 <!-- ←←← change title -->
-  <p class="realm-subtitle">Wallpapers, edits, videos</p>
-</header>
+  <!-- STARFIELD — stays in every realm, looks insane -->
+  <div class="stars" id="stars"></div>
 
-<main class="container">
-  <div class="controls">
-    <button id="new-folder" class="btn">+ New Folder</button>
-    <button id="upload-here" class="btn secondary">↑ Upload Here</button>
-  </div>
+  <header class="realm-header">
+    <h1 class="realm-title">Memes</h1>                 <!-- ←←← CHANGE THIS TITLE -->
+    <p class="realm-subtitle">Wallpapers, edits, videos</p>
+  </header>
 
-  <div id="feed" class="feed-grid"></div>
-</main>
+  <main class="container">
+    <div class="controls">
+      <button id="new-folder" class="btn">+ New Folder</button>
+      <button id="upload-here" class="btn secondary">↑ Upload Here</button>
+    </div>
 
-<script type="module">
-  import { listFolders, listFiles, createFolder, fileURL, ALLOWED } from "../assets/main.js";
+    <div id="feed" class="feed-grid"></div>
+  </main>
 
-  const REALM = "memes";                 // ←←← change this for each realm
-  const feed = document.getElementById("feed");
+  <!-- STARFIELD GENERATOR — runs once per page load -->
+  <script>
+    const s = document.getElementById('stars');
+    for(let i = 0; i < 150; i++){
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = Math.random()*100 + 'vh';
+      star.style.left = Math.random()*100 + 'vw';
+      star.style.animationDelay = Math.random()*4 + 's';
+      star.style.animationDuration = (3 + Math.random()*3) + 's';
+      s.appendChild(star);
+    }
+  </script>
 
-  // Get current subfolder from URL (?folder=cats/anime)
-  const urlParams = new URLSearchParams(location.search);
-  const currentFolder = urlParams.get("folder") || "";
+  <!-- MAIN REALM LOGIC -->
+  <script type="module">
+    import { listFolders, listFiles, createFolder, fileURL } from "../assets/main.js";
 
-  document.querySelector(".realm-title").textContent = 
-    currentFolder ? currentFolder.split("/").pop() : REALM.charAt(0).toUpperCase() + REALM.slice(1);
+    const REALM = "memes";                 // ←←← CHANGE THIS FOR EACH REALM
+    const feed = document.getElementById("feed");
 
-  async function load() {
-    feed.innerHTML = "<div class='empty'>Loading…</div>";
-    const [folders, files] = await Promise.all([
-      listFolders(REALM, currentFolder),
-      listFiles(REALM, currentFolder)
-    ]);
+    const urlParams = new URLSearchParams(location.search);
+    const currentFolder = urlParams.get("folder") || "";
 
-    feed.innerHTML = "";
+    document.querySelector(".realm-title").textContent = 
+      currentFolder ? currentFolder.split("/").pop() : REALM.charAt(0).toUpperCase() + REALM.slice(1);
 
-    // Breadcrumb
-    if (currentFolder) {
-      const parts = currentFolder.split("/");
-      let path = "";
-      const crumbs = parts.map((part, i) => {
-        path += (i > 0 ? "/" : "") + part;
-        return `<a href="?folder=${path}">${part}</a>`;
+    async function load() {
+      feed.innerHTML = "<div class='empty'>Loading…</div>";
+      const [folders, files] = await Promise.all([
+        listFolders(REALM, currentFolder),
+        listFiles(REALM, currentFolder)
+      ]);
+
+      feed.innerHTML = "";
+
+      // Breadcrumb
+      if (currentFolder) {
+        const parts = currentFolder.split("/");
+        let path = "";
+        const crumbs = parts.map((part, i) => {
+          path += (i > 0 ? "/" : "") + part;
+          return `<a href="?folder=${path}">${part}</a>`;
+        });
+        feed.innerHTML += `<div class="breadcrumb">← <a href="?folder=${parts.slice(0,-1).join("/") || ""}">..</a> / ${crumbs.join(" / ")}</div>`;
+      }
+
+      folders.forEach(f => {
+        const a = document.createElement("a");
+        a.className = "folder-card";
+        a.href = `?folder=${currentFolder ? currentFolder + "/" : ""}${f.name}`;
+        a.innerHTML = `<span class="folder-icon">Folder</span><span>${f.name}</span>`;
+        feed.appendChild(a);
       });
-      feed.innerHTML += `<div class="breadcrumb">← <a href="?folder=${parts.slice(0,-1).join("/")}">..</a> / ${crumbs.join(" / ")}</div>`;
+
+      files.forEach(f => {
+        const url = fileURL(f.path);
+        const isImage = /\.(jpe?g|png|gif|webp|bmp)$/i.test(f.name);
+        const isVideo = /\.(mp4|webm|mkv|mov|avi)$/i.test(f.name);
+
+        const card = document.createElement("div");
+        card.className = "file-card";
+        card.innerHTML = `
+          ${isImage ? `<img src="${url}" loading="lazy">` : 
+            isVideo ? `<video src="${url}" loop muted playsinline preload="metadata"></video>` : 
+            `<div class="file-icon">File</div>`}
+          <div class="file-name">${f.name}</div>
+        `;
+        card.onclick = () => window.open(url, "_blank");
+        feed.appendChild(card);
+      });
+
+      if (folders.length === 0 && files.length === 0) {
+        feed.innerHTML = "<div class='empty'>This folder is empty — be the first!</div>";
+      }
     }
 
-    folders.forEach(f => {
-      const a = document.createElement("a");
-      a.className = "folder-card";
-      a.href = `?folder=${currentFolder ? currentFolder + "/" : ""}${f.name}`;
-      a.innerHTML = `<span class="folder-icon">📁</span><span>${f.name}</span>`;
-      feed.appendChild(a);
-    });
+    document.getElementById("new-folder").onclick = async () => {
+      const name = prompt("Folder name:");
+      if (!name) return;
+      const ok = await createFolder(REALM, currentFolder, name);
+      if (ok) load();
+    };
 
-    files.forEach(f => {
-      const url = fileURL(f.path);
-      const isImage = /\.(jpe?g|png|gif|webp|bmp)$/i.test(f.name);
-      const isVideo = /\.(mp4|webm|mkv|mov|avi)$/i.test(f.name);
+    document.getElementById("upload-here").onclick = () => {
+      window.location.href = `/upload.html?realm=${REALM}&folder=${currentFolder}`;
+    };
 
-      const card = document.createElement("div");
-      card.className = "file-card";
-      card.innerHTML = `
-        ${isImage ? `<img src="${url}" loading="lazy">` : 
-          isVideo ? `<video src="${url}" loop muted playsinline></video>` : 
-          `<div class="file-icon">📄</div>`}
-        <div class="file-name">${f.name}</div>
-      `;
-      card.onclick = () => window.open(url, "_blank");
-      feed.appendChild(card);
-    });
-
-    if (folders.length === 0 && files.length === 0) {
-      feed.innerHTML = "<div class='empty'>This folder is empty — be the first!</div>";
-    }
-  }
-
-  document.getElementById("new-folder").onclick = async () => {
-    const name = prompt("Folder name:");
-    if (!name) return;
-    const ok = await createFolder(REALM, currentFolder, name);
-    if (ok) load();
-  };
-
-  document.getElementById("upload-here").onclick = () => {
-    window.location.href = `/upload.html?realm=${REALM}&folder=${currentFolder}`;
-  };
-
-  load();
-</script>
+    load();
+  </script>
 </body>
 </html>
