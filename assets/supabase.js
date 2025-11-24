@@ -1,40 +1,36 @@
-// assets/supabase.js
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+/* assets/supabase.js
+   Loads supabase client and exposes window.supabase (ready to use by other scripts).
+   Replace SUPABASE_URL and SUPABASE_ANON_KEY with your real values.
+*/
 
-// Replace these with your project info
-const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+(function () {
+  // <-- REPLACED WITH YOUR PROJECT VALUES -->
+  window.SUPABASE_URL = "https://zpjkouxgowehpyqmfssa.supabase.co";
+  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwamtvdXhnb3dlaHB5cW1mc3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MTY4NzcsImV4cCI6MjA3OTQ5Mjg3N30.xVbcxti5XGdcQtwWbR4C7OhCMJSsC6faox7RAPRDTKY";
+  // ----------------------------------------------------
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // create a loader that imports the ESM supabase client and exposes a ready client at window.supabaseClient
+  async function init() {
+    try {
+      // dynamic import from jsDelivr ESM build
+      const module = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm");
+      // module.createClient is available
+      window.supabaseClient = module.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
-/**
- * List files in a given bucket and optional folder
- * @param {string} bucket - bucket name (realm)
- * @param {string} folder - optional subfolder inside bucket
- * @returns array of file objects {name, url, mime, size}
- */
-export async function listFiles(bucket, folder = '') {
-    const path = folder ? `${folder}/` : '';
-    const { data, error } = await supabase
-        .storage
-        .from(bucket)
-        .list(path, { limit: 1000, offset: 0, sortBy: { column: 'name', order: 'asc' }});
+      // For backwards compatibility with some older code expecting window.supabase.createClient
+      window.supabase = {
+        createClient: (url, key) => module.createClient(url, key)
+      };
 
-    if (error) {
-        console.error('Supabase listFiles error:', error);
-        return [];
+      // also attach convenience alias
+      window.supabaseReady = true;
+      console.info("Supabase client loaded.");
+    } catch (err) {
+      console.error("Failed to load Supabase client:", err);
+      window.supabaseReady = false;
     }
+  }
 
-    // Add public URLs
-    const filesWithUrl = await Promise.all(data.map(async f => {
-        const { publicURL } = supabase.storage.from(bucket).getPublicUrl(f.name);
-        return {
-            name: f.name,
-            url: publicURL,
-            size: f.size,
-            mime: f.metadata?.mimetype || 'file'
-        };
-    }));
-
-    return filesWithUrl;
-}
+  // start initialization immediately
+  init();
+})();
