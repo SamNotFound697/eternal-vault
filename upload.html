@@ -1,26 +1,26 @@
-<!-- upload.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Eternal Vault — Upload</title>
-  <link rel="stylesheet" href="assets/styles.css">
+  <title>Upload — Eternal Vault</title>
+  <link rel="stylesheet" href="/assets/styles.css">
   <style>
-    /* small inline helpers so page looks decent */
-    .container{max-width:960px;margin:28px auto;padding:16px}
-    .panel{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
-    label{display:block;margin:8px 0 6px}
-    input, select {width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-    button{margin-top:12px}
-    .status{margin-top:10px;color:var(--muted)}
+    .upload-wrap{max-width:760px;margin:36px auto;padding:18px}
+    .row{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+    label{min-width:110px;color:var(--muted)}
+    input[type="text"],select{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    #status{margin-top:12px;color:var(--muted)}
+    .btn{padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));border:none;color:#071018;font-weight:700;cursor:pointer}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Upload to Eternal Vault</h1>
-    <div class="panel">
-      <label for="realm">Select realm</label>
+  <main class="container upload-wrap">
+    <h1 style="margin:0 0 8px">Upload file</h1>
+    <p class="small" style="margin:0 0 18px">Select realm, choose (or create) folder, upload.</p>
+
+    <div class="row">
+      <label>Realm</label>
       <select id="realm">
         <option value="visuals">Visuals</option>
         <option value="games">Games</option>
@@ -29,49 +29,119 @@
         <option value="memes">Memes</option>
         <option value="secrets">Secrets</option>
       </select>
-
-      <label for="folder">Subfolder name (create or use existing)</label>
-      <input id="folder" placeholder="e.g. summer-2025" />
-
-      <label for="file">Choose file</label>
-      <input id="file" type="file" />
-
-      <button id="uploadBtn" class="btn">Upload</button>
-      <div id="status" class="status"></div>
-      <p class="small">Note: Files outside a realm's allowed extensions will be rejected.</p>
     </div>
-  </div>
 
-  <script src="assets/supabase.js"></script>
-  <script src="assets/uploader.js"></script>
-  <script>
-    // Wiring
-    (function(){
-      const realmEl = document.getElementById('realm');
-      const folderEl = document.getElementById('folder');
-      const fileEl = document.getElementById('file');
-      const btn = document.getElementById('uploadBtn');
-      const status = document.getElementById('status');
+    <div class="row">
+      <label>Existing folder</label>
+      <select id="existing-folder">
+        <option value="">— select —</option>
+      </select>
+    </div>
 
-      // Ensure supabase loaded
-      const waitForSupabase = async () => {
-        let tries = 0;
-        while (!window.supabaseClient && tries < 40) {
-          await new Promise(r => setTimeout(r, 100));
-          tries++;
-        }
-        if (!window.supabaseClient) status.textContent = "Supabase not ready. Reload page.";
-      };
-      waitForSupabase();
+    <div class="row">
+      <label>Or new folder</label>
+      <input id="new-folder" type="text" placeholder="create new folder (optional)">
+    </div>
 
-      // Attach uploader
-      window.EternalUploader.attachUploader(btn, realmEl, folderEl, fileEl, status);
+    <div class="row">
+      <label>File</label>
+      <input id="file" type="file">
+    </div>
 
-      // Refresh feed on success (emit handled by realm pages)
-      document.addEventListener('file:uploaded', (evt)=>{
-        status.textContent = "Upload completed.";
-      });
-    })();
+    <div style="display:flex;gap:12px;margin-top:12px">
+      <button id="uploadBtn" class="btn">Upload</button>
+      <button id="refreshFolders" class="btn" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text-on-dark)">Refresh folders</button>
+    </div>
+
+    <div id="status"></div>
+  </main>
+
+  <script type="module">
+    import { supabase, BUCKET, listFolders, createFolder } from '/assets/main.js';
+
+    const realmEl = document.getElementById('realm');
+    const existingEl = document.getElementById('existing-folder');
+    const newFolderEl = document.getElementById('new-folder');
+    const fileEl = document.getElementById('file');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const refreshBtn = document.getElementById('refreshFolders');
+    const status = document.getElementById('status');
+
+    async function populateFolders() {
+      existingEl.innerHTML = '<option value="">— select —</option>';
+      const realm = realmEl.value;
+      try {
+        const folders = await listFolders(realm);
+        folders.forEach(f => {
+          const o = document.createElement('option');
+          o.value = f.name;
+          o.textContent = f.name;
+          existingEl.appendChild(o);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    realmEl.addEventListener('change', populateFolders);
+    refreshBtn.addEventListener('click', populateFolders);
+
+    async function doUpload() {
+      const realm = realmEl.value;
+      const file = fileEl.files && fileEl.files[0];
+      if (!file) { status.textContent = 'Choose a file.'; return; }
+
+      status.textContent = 'Preparing upload...';
+
+      // decide folder
+      let folder = (newFolderEl.value || '').trim() || existingEl.value || '';
+      if (!folder) folder = 'root';
+
+      // if new folder requested, create placeholder
+      if (newFolderEl.value && newFolderEl.value.trim()) {
+        status.textContent = 'Creating folder...';
+        const ok = await createFolder(realm, newFolderEl.value.trim());
+        if (!ok) { status.textContent = 'Failed creating folder.'; return; }
+      }
+
+      const safeName = `${Date.now()}-${file.name}`;
+      const path = `${realm}/${folder}/${safeName}`;
+
+      status.textContent = 'Uploading file...';
+
+      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: false });
+      if (upErr) {
+        // try upsert fallback
+        const { error: upErr2 } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true });
+        if (upErr2) { status.textContent = 'Upload failed: ' + upErr2.message; console.error(upErr2); return; }
+      }
+
+      // get public url
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+      const publicUrl = data && data.publicUrl ? data.publicUrl : null;
+
+      status.textContent = 'Upload complete.';
+
+      // dispatch event so pages can refresh
+      document.dispatchEvent(new CustomEvent('file:uploaded', {
+        detail: { realm, folder, filename: safeName, url: publicUrl, size: file.size, mime: file.type }
+      }));
+
+      // clear file input
+      fileEl.value = '';
+      newFolderEl.value = '';
+      await populateFolders();
+    }
+
+    uploadBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      uploadBtn.disabled = true;
+      await doUpload();
+      uploadBtn.disabled = false;
+    });
+
+    // initial populate
+    populateFolders();
   </script>
 </body>
 </html>
