@@ -10,7 +10,7 @@
 
 <header class="realm-header">
     <h1 class="realm-title">Visuals</h1>
-    <p class="realm-subtitle">Images, wallpapers, edits, and visual creations.</p>
+    <p class="realm-subtitle">Images, wallpapers, edits, and all visual creations.</p>
 </header>
 
 <main>
@@ -21,17 +21,10 @@
     <div id="realm-feed" class="feed-grid"></div>
 </main>
 
-<script>
-    window.REALM = "visuals";
-</script>
+<script> window.REALM = "visuals"; </script>
 
 <script type="module">
-    import { 
-        listFiles, 
-        listFolders, 
-        createFolder, 
-        fileURL 
-    } from "../assets/main.js";
+    import { listFiles, listFolders, createFolder, fileURL } from "../assets/main.js";
 
     const feed = document.getElementById("realm-feed");
     const btn = document.getElementById("create-folder-btn");
@@ -69,7 +62,6 @@
 
         const ok = await createFolder(window.REALM, name);
         if (ok) loadRealm();
-        else alert("Failed");
     });
 
     loadRealm();
