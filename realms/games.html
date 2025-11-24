@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Games Realm</title>
+    <title>Games</title>
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
 
-<header>
-    <h1>Games</h1>
-    <p>Images, wallpapers, edits, and all visual creations.</p>
+<header class="realm-header">
+    <h1 class="realm-title">Games</h1>
+    <p class="realm-subtitle">APKs, EXEs, archives, installers.</p>
 </header>
 
 <main>
+    <section class="control-panel">
+        <button id="create-folder-btn" class="btn">+ New Folder</button>
+    </section>
+
     <div id="realm-feed" class="feed-grid"></div>
 </main>
 
@@ -22,26 +26,46 @@
 </script>
 
 <script type="module">
-    import { listFiles, fileURL } from "../assets/main.js";
+    import { listFiles, listFolders, createFolder, fileURL } from "../assets/main.js";
 
     const feed = document.getElementById("realm-feed");
+    const btn = document.getElementById("create-folder-btn");
 
     async function loadRealm() {
+        feed.innerHTML = "";
+
+        const folders = await listFolders(window.REALM);
         const files = await listFiles(window.REALM);
+
+        folders.forEach(folder => {
+            const el = document.createElement("a");
+            el.className = "folder-card";
+            el.href = `./${folder.name}/`;
+            el.textContent = folder.name;
+            feed.appendChild(el);
+        });
 
         files.forEach(f => {
             const url = fileURL(`${window.REALM}/${f.name}`);
 
-            const card = document.createElement("a");
-            card.className = "file-card";
-            card.href = url;
-            card.target = "_blank";
-            card.rel = "noopener";
-            card.textContent = f.name;
-
-            feed.appendChild(card);
+            const el = document.createElement("a");
+            el.className = "file-card";
+            el.href = url;
+            el.target = "_blank";
+            el.rel = "noopener";
+            el.textContent = f.name;
+            feed.appendChild(el);
         });
     }
+
+    btn.addEventListener("click", async () => {
+        const name = prompt("Folder name:");
+        if (!name) return;
+
+        const ok = await createFolder(window.REALM, name);
+        if (ok) loadRealm();
+        else alert("Failed");
+    });
 
     loadRealm();
 </script>
