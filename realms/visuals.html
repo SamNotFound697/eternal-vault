@@ -8,12 +8,18 @@
 </head>
 <body>
 
-<header>
-    <h1>Visuals</h1>
-    <p>Images, wallpapers, edits, and all visual creations.</p>
+<header class="realm-header">
+    <h1 class="realm-title">Visuals</h1>
+    <p class="realm-subtitle">Images, wallpapers, edits, and visual creations.</p>
 </header>
 
 <main>
+    <!-- Folder creation button -->
+    <section class="control-panel">
+        <button id="create-folder-btn" class="btn-primary">+ New Folder</button>
+    </section>
+
+    <!-- File grid -->
     <div id="realm-feed" class="feed-grid"></div>
 </main>
 
@@ -22,13 +28,36 @@
 </script>
 
 <script type="module">
-    import { listFiles, fileURL } from "../assets/main.js";
+    import { 
+        listFiles, 
+        listFolders,
+        createFolder,
+        fileURL 
+    } from "../assets/main.js";
 
     const feed = document.getElementById("realm-feed");
+    const createFolderBtn = document.getElementById("create-folder-btn");
 
+    /* ---------------------
+       Load folders + files
+    ---------------------- */
     async function loadRealm() {
+        feed.innerHTML = "";
+
+        const folders = await listFolders(window.REALM);
         const files = await listFiles(window.REALM);
 
+        /* ---------- Folders ---------- */
+        folders.forEach(folder => {
+            const card = document.createElement("a");
+            card.className = "folder-card";
+            card.href = `${folder.name}/index.html`;
+            card.textContent = folder.name;
+
+            feed.appendChild(card);
+        });
+
+        /* ---------- Files ---------- */
         files.forEach(f => {
             const url = fileURL(`${window.REALM}/${f.name}`);
 
@@ -42,6 +71,18 @@
             feed.appendChild(card);
         });
     }
+
+    /* ---------------------
+       Folder Creation
+    ---------------------- */
+    createFolderBtn.addEventListener("click", async () => {
+        const name = prompt("Enter folder name:");
+        if (!name) return;
+
+        const ok = await createFolder(window.REALM, name);
+        if (ok) loadRealm();
+        else alert("Error creating folder");
+    });
 
     loadRealm();
 </script>
