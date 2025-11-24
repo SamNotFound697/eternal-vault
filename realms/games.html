@@ -10,7 +10,7 @@
 
 <header class="realm-header">
     <h1 class="realm-title">Games</h1>
-    <p class="realm-subtitle">APKs, EXEs, archives, installers.</p>
+    <p class="realm-subtitle">APKs, EXEs, ZIPs — all gaming files.</p>
 </header>
 
 <main>
@@ -21,9 +21,7 @@
     <div id="realm-feed" class="feed-grid"></div>
 </main>
 
-<script>
-    window.REALM = "games";
-</script>
+<script> window.REALM = "games"; </script>
 
 <script type="module">
     import { listFiles, listFolders, createFolder, fileURL } from "../assets/main.js";
@@ -64,7 +62,6 @@
 
         const ok = await createFolder(window.REALM, name);
         if (ok) loadRealm();
-        else alert("Failed");
     });
 
     loadRealm();
