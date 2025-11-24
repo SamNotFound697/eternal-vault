@@ -1,32 +1,29 @@
-/* assets/main.js
-   Landing and global behaviors (mobile friendly, minimal)
-*/
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-(function () {
-  // Simple progressive enhancement for landing page interactions
-  document.addEventListener("DOMContentLoaded", () => {
-    // Add subtle float animation to realm cards
-    const cards = document.querySelectorAll(".realm-card");
-    cards.forEach((c, i) => {
-      c.style.transitionDelay = `${i * 40}ms`;
-      c.addEventListener("mouseover", () => c.classList.add("hover"));
-      c.addEventListener("mouseout", () => c.classList.remove("hover"));
-    });
+export const supabase = createClient(
+  "https://zpjkouxgowehpyqmfssa.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwamtvdXhnb3dlaHB5cW1mc3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MTY4NzcsImV4cCI6MjA3OTQ5Mjg3N30.xVbcxti5XGdcQtwWbR4C7OhCMJSsC6faox7RAPRDTKY"
+);
 
-    // Smooth scroll for internal links (if used)
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute("href"));
-        if (target) target.scrollIntoView({ behavior: "smooth" });
-      });
-    });
+// Base bucket name
+export const BUCKET = "vault";
 
-    // Tiny viewport fix for iOS address bar
-    const setVh = () => {
-      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
-    };
-    setVh();
-    window.addEventListener("resize", setVh);
+// List files in a folder (realm)
+export async function listFiles(folder) {
+  const { data, error } = await supabase.storage.from(BUCKET).list(folder, {
+    limit: 5000,
+    sortBy: { column: "name", order: "desc" }
   });
-})();
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data;
+}
+
+// Get public URL
+export function fileURL(path) {
+  return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}
