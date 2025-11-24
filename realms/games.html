@@ -10,20 +10,41 @@
 
 <header>
     <h1>Games</h1>
-    <p>PC games, APKs, mods, and compressed files.</p>
+    <p>Images, wallpapers, edits, and all visual creations.</p>
 </header>
 
 <main>
     <div id="realm-feed" class="feed-grid"></div>
 </main>
 
-<!-- Dropbox + Realm Integration -->
 <script>
     window.REALM = "games";
 </script>
-<script type="module" src="../assets/supabase.js"></script>
-<script type="module" src="../assets/realm.js"></script>
+
+<script type="module">
+    import { listFiles, fileURL } from "../assets/main.js";
+
+    const feed = document.getElementById("realm-feed");
+
+    async function loadRealm() {
+        const files = await listFiles(window.REALM);
+
+        files.forEach(f => {
+            const url = fileURL(`${window.REALM}/${f.name}`);
+
+            const card = document.createElement("a");
+            card.className = "file-card";
+            card.href = url;
+            card.target = "_blank";
+            card.rel = "noopener";
+            card.textContent = f.name;
+
+            feed.appendChild(card);
+        });
+    }
+
+    loadRealm();
+</script>
 
 </body>
 </html>
-
