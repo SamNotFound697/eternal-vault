@@ -1,71 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music</title>
-    <link rel="stylesheet" href="../assets/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music — Realms</title>
+  <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
 
 <header class="realm-header">
-    <h1 class="realm-title">Music</h1>
-    <p class="realm-subtitle">MP3s, WAVs, FLACs — all music files.</p>
+  <h1 class="realm-title">Music</h1>                 <!-- ←←← change title -->
+  <p class="realm-subtitle">Wallpapers, edits, videos</p>
 </header>
 
-<main>
-    <section class="control-panel">
-        <button id="create-folder-btn" class="btn">+ New Folder</button>
-    </section>
+<main class="container">
+  <div class="controls">
+    <button id="new-folder" class="btn">+ New Folder</button>
+    <button id="upload-here" class="btn secondary">↑ Upload Here</button>
+  </div>
 
-    <div id="realm-feed" class="feed-grid"></div>
+  <div id="feed" class="feed-grid"></div>
 </main>
 
-<script> window.REALM = "music"; </script>
-
 <script type="module">
-    import { listFiles, listFolders, createFolder, fileURL } from "../assets/main.js";
+  import { listFolders, listFiles, createFolder, fileURL, ALLOWED } from "../assets/main.js";
 
-    const feed = document.getElementById("realm-feed");
-    const btn = document.getElementById("create-folder-btn");
+  const REALM = "music";                 // ←←← change this for each realm
+  const feed = document.getElementById("feed");
 
-    async function loadRealm() {
-        feed.innerHTML = "";
+  // Get current subfolder from URL (?folder=cats/anime)
+  const urlParams = new URLSearchParams(location.search);
+  const currentFolder = urlParams.get("folder") || "";
 
-        const folders = await listFolders(window.REALM);
-        const files = await listFiles(window.REALM);
+  document.querySelector(".realm-title").textContent = 
+    currentFolder ? currentFolder.split("/").pop() : REALM.charAt(0).toUpperCase() + REALM.slice(1);
 
-        folders.forEach(folder => {
-            const el = document.createElement("a");
-            el.className = "folder-card";
-            el.href = `./${folder.name}/`;
-            el.textContent = folder.name;
-            feed.appendChild(el);
-        });
+  async function load() {
+    feed.innerHTML = "<div class='empty'>Loading…</div>";
+    const [folders, files] = await Promise.all([
+      listFolders(REALM, currentFolder),
+      listFiles(REALM, currentFolder)
+    ]);
 
-        files.forEach(f => {
-            const url = fileURL(`${window.REALM}/${f.name}`);
+    feed.innerHTML = "";
 
-            const el = document.createElement("a");
-            el.className = "file-card";
-            el.href = url;
-            el.target = "_blank";
-            el.rel = "noopener";
-            el.textContent = f.name;
-            feed.appendChild(el);
-        });
+    // Breadcrumb
+    if (currentFolder) {
+      const parts = currentFolder.split("/");
+      let path = "";
+      const crumbs = parts.map((part, i) => {
+        path += (i > 0 ? "/" : "") + part;
+        return `<a href="?folder=${path}">${part}</a>`;
+      });
+      feed.innerHTML += `<div class="breadcrumb">← <a href="?folder=${parts.slice(0,-1).join("/")}">..</a> / ${crumbs.join(" / ")}</div>`;
     }
 
-    btn.addEventListener("click", async () => {
-        const name = prompt("Folder name:");
-        if (!name) return;
-
-        const ok = await createFolder(window.REALM, name);
-        if (ok) loadRealm();
+    folders.forEach(f => {
+      const a = document.createElement("a");
+      a.className = "folder-card";
+      a.href = `?folder=${currentFolder ? currentFolder + "/" : ""}${f.name}`;
+      a.innerHTML = `<span class="folder-icon">📁</span><span>${f.name}</span>`;
+      feed.appendChild(a);
     });
 
-    loadRealm();
-</script>
+    files.forEach(f => {
+      const url = fileURL(f.path);
+      const isImage = /\.(jpe?g|png|gif|webp|bmp)$/i.test(f.name);
+      const isVideo = /\.(mp4|webm|mkv|mov|avi)$/i.test(f.name);
 
+      const card = document.createElement("div");
+      card.className = "file-card";
+      card.innerHTML = `
+        ${isImage ? `<img src="${url}" loading="lazy">` : 
+          isVideo ? `<video src="${url}" loop muted playsinline></video>` : 
+          `<div class="file-icon">📄</div>`}
+        <div class="file-name">${f.name}</div>
+      `;
+      card.onclick = () => window.open(url, "_blank");
+      feed.appendChild(card);
+    });
+
+    if (folders.length === 0 && files.length === 0) {
+      feed.innerHTML = "<div class='empty'>This folder is empty — be the first!</div>";
+    }
+  }
+
+  document.getElementById("new-folder").onclick = async () => {
+    const name = prompt("Folder name:");
+    if (!name) return;
+    const ok = await createFolder(REALM, currentFolder, name);
+    if (ok) load();
+  };
+
+  document.getElementById("upload-here").onclick = () => {
+    window.location.href = `/upload.html?realm=${REALM}&folder=${currentFolder}`;
+  };
+
+  load();
+</script>
 </body>
 </html>
