@@ -5,36 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload — Realms</title>
   <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/modal.css">
 </head>
 <body>
-<div class="container" style="max-width:640px;margin:40px auto;padding:20px">
-  <h1>Upload File</h1>
-  <input type="file" id="file" multiple style="margin:16px 0">
-  <button id="up" class="btn">Upload</button>
-  <div id="status"></div>
+<div class="container" style="max-width:640px;margin:80px auto;padding:20px;text-align:center">
+  <h1 style="font-size:2.5rem;margin-bottom:20px">Upload to the Vault</h1>
+
+  <label class="custom-file-upload">
+    Choose Files
+    <input type="file" id="file" multiple>
+  </label>
+
+  <div class="progress-container" id="progress-container" style="display:none">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <div id="status" style="margin-top:20px;font-size:1.1rem"></div>
 </div>
 
 <script type="module">
-  import { supabase, BUCKET, ALLOWED, fileURL } from "/assets/main.js";
+  import { supabase, BUCKET, ALLOWED } from "/assets/main.js";
   const params = new URLSearchParams(location.search);
   const realm = params.get("realm") || "secrets";
   const folder = params.get("folder") || "";
 
-  document.getElementById("up").onclick = async () => {
-    const files = document.getElementById("file").files;
-    if (files.length === 0) return alert("Choose file(s)");
+  const fileInput = document.getElementById('file');
+  const progressContainer = document.getElementById('progress-container');
+  const progressBar = document.getElementById('progress-bar');
+  const status = document.getElementById('status');
+
+  fileInput.addEventListener('change', async () => {
+    const files = fileInput.files;
+    if (files.length === 0) return;
+
+    progressContainer.style.display = 'block';
+    status.textContent = `Uploading ${files.length} file(s)...`;
+
+    let uploaded = 0;
     for (const file of files) {
-      const ext = file.name.split(".").pop().toLowerCase();
+      const ext = file.name.split('.').pop().toLowerCase();
       if (ALLOWED[realm] && !ALLOWED[realm].includes(ext)) {
-        alert(`${file.name} not allowed in ${realm}`);
+        status.textContent = `${file.name} not allowed in ${realm}`;
         continue;
       }
-      const path = `${realm}/${folder ? folder + "/" : ""}${Date.now()}-${file.name}`;
-      const { error } = await supabase.storage.from(BUCKET).upload(path, file);
-      if (error) alert("Error: " + error.message);
+
+      const path = `${realm}/${folder ? folder + '/' : ''}${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+        onUploadProgress: (progress) => {
+          progressBar.style.width = `${(progress.loaded / progress.total) * 100}%`;
+        }
+      });
+
+      if (error) {
+        status.textContent = `Error: ${error.message}`;
+      } else {
+        uploaded++;
+        progressBar.style.width = `${(uploaded / files.length) * 100}%`;
+      }
     }
-    document.getElementById("status").innerHTML = "Done! <a href='/realms/"+realm+".html"+(folder?"?folder="+folder:"")+"'>← Back</a>";
-  };
+
+    status.innerHTML = `Done! ${uploaded} uploaded.<br><a href='/realms/${realm}.html${folder ? '?folder=' + folder : ''}' style='color:#7df9ff'>← Back to ${realm}</a>`;
+    progressContainer.style.display = 'none';
+    progressBar.style.width = '0%';
+    fileInput.value = '';
+  });
 </script>
 </body>
 </html>
