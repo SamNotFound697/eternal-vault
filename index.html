@@ -8,6 +8,38 @@
 </head>
 <body>
 
+  <!-- MYSTERIOUS FLOATING LETTER POPUP — appears only once per session -->
+<div class="letter-overlay" id="welcome-letter">
+  <div class="letter-paper">
+    <div class="letter-content">
+      <h2>Hi :D</h2>
+      <p>This is my space.<br>
+      A hidden corner of the internet I built just to share vibes, files, and chaos with friends like you.</p>
+      <p>Feel completely free to explore, upload anything (within your realm), create folders, go wild.</p>
+      <p>If you have suggestions, ideas, or just wanna chat:<br>
+      <strong>samratvkamble@proton.me</strong><br>
+      or hit me up IRL — you know where to find me.</p>
+      <p style="margin-top:30px;font-style:italic;text-align:right">
+        Yours truly,<br>
+        <span style="font-size:1.4rem;color:#ff6ec4;">Samrat</span>
+      </p>
+    </div>
+    <button class="close-letter">Enter the Realms →</button>
+  </div>
+</div>
+
+<script>
+  // Show only once per browser session
+  if (!sessionStorage.getItem('letterShown')) {
+    document.getElementById('welcome-letter').classList.add('visible');
+    sessionStorage.setItem('letterShown', 'true');
+  }
+
+  document.querySelector('.close-letter').onclick = () => {
+    document.getElementById('welcome-letter').classList.remove('visible');
+  };
+</script>
+  
   <!-- STARFIELD — same as realms -->
   <div class="stars" id="stars"></div>
 
@@ -17,39 +49,39 @@
   </header>
 
   <main class="container">
-    <div class="feed-grid" style="max-width: 1200px; margin: 0 auto;">
+<div class="feed-grid" style="max-width: 1200px; margin: 0 auto;">
 
-      <a href="/realms/visuals.html" class="folder-card">
-        <span class="folder-icon">Visuals</span>
-        <span>Wallpapers · Edits · Videos</span>
-      </a>
+  <a href="/realms/visuals.html" class="folder-card">
+    <span class="folder-icon">🖼️</span>
+    <span>Wallpapers · Edits · Videos</span>
+  </a>
 
-      <a href="/realms/games.html" class="folder-card">
-        <span class="folder-icon">Games</span>
-        <span>APKs · ROMs · Mods</span>
-      </a>
+  <a href="/realms/games.html" class="folder-card">
+    <span class="folder-icon">🎮</span>
+    <span>APKs · ROMs · Mods</span>
+  </a>
 
-      <a href="/realms/movies.html" class="folder-card">
-        <span class="folder-icon">Movies</span>
-        <span>4K · Anime · Classics</span>
-      </a>
+  <a href="/realms/movies.html" class="folder-card">
+    <span class="folder-icon">🎬</span>
+    <span>4K · Anime · Classics</span>
+  </a>
 
-      <a href="/realms/music.html" class="folder-card">
-        <span class="folder-icon">Music</span>
-        <span>Lo-fi · J-Pop · Playlists</span>
-      </a>
+  <a href="/realms/music.html" class="folder-card">
+    <span class="folder-icon">🎵</span>
+    <span>Lo-fi · J-Pop · Playlists</span>
+  </a>
 
-      <a href="/realms/memes.html" class="folder-card">
-        <span class="folder-icon">Memes</span>
-        <span>Dank · Reaction · Templates</span>
-      </a>
+  <a href="/realms/memes.html" class="folder-card">
+    <span class="folder-icon">😂</span>
+    <span>Dank · Reaction · Templates</span>
+  </a>
 
-      <a href="/realms/secrets.html" class="folder-card" style="background: linear-gradient(135deg, rgba(255,0,150,0.2), rgba(100,0,255,0.2)); border: 1px solid #ff00aa;">
-        <span class="folder-icon">Secrets</span>
-        <span>Hidden · Private · Chaos</span>
-      </a>
+  <a href="/realms/secrets.html" class="folder-card" style="background: linear-gradient(135deg, rgba(255,0,150,0.2), rgba(100,0,255,0.2)); border: 1px solid #ff00aa;">
+    <span class="folder-icon">🔮</span>
+    <span>Hidden · Private · Chaos</span>
+  </a>
 
-    </div>
+</div>
   </main>
 
   <!-- STARFIELD SCRIPT — same as realms -->
@@ -67,3 +99,4 @@
   </script>
 </body>
 </html>
+
