@@ -24,7 +24,13 @@
         <span style="font-size:1.4rem;color:#ff6ec4;">Samrat</span>
       </p>
     </div>
-    <button class="close-letter">Enter the Realms →</button>
+<button class="close-letter" onclick="closeWelcome()">
+  <span>Enter the Realms</span>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M5 12h14M12 5l7 7-7 7"/>
+  </svg>
+</button>
+    
   </div>
 </div>
 
@@ -35,9 +41,9 @@
     sessionStorage.setItem('letterShown', 'true');
   }
 
-  document.querySelector('.close-letter').onclick = () => {
+  function closeWelcome() {
     document.getElementById('welcome-letter').classList.remove('visible');
-  };
+  }
 </script>
   
   <!-- STARFIELD — same as realms -->
@@ -100,5 +106,6 @@
   </script>
 </body>
 </html>
+
 
 
