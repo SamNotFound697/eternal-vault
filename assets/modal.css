@@ -1,3 +1,35 @@
+/* COOKING STATUS BAR — CLEAN & CONTROLLED BY YOU */
+.cooking-status-container {
+  position: fixed;
+  top: 0; left: 0; width: 100%;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  padding: 8px 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: 'Rubik', sans-serif;
+}
+.cooking-status-text {
+  color: #7df9ff;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+}
+.cooking-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.cooking-progress {
+  height: 100%;
+  width: 0%; /* YOU CHANGE THIS % */
+  background: linear-gradient(90deg, #ff6ec4, #7df9ff);
+  transition: width 1s ease;
+}
+
 /* FLOATING MYSTERIOUS LETTER POPUP */
 .letter-overlay {
   position: fixed;
