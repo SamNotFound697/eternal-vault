@@ -1,33 +1,36 @@
-/* COOKING STATUS BAR — CLEAN & CONTROLLED BY YOU */
+/* COOKING STATUS BAR — STATIC WHEN IDLE, FILLS WHEN COOKING, ONLY BY ME! */
 .cooking-status-container {
   position: fixed;
   top: 0; left: 0; width: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5);
   backdrop-filter: blur(8px);
-  padding: 8px 20px;
+  padding: 10px 20px;
   z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  text-align: center;
   font-family: 'Rubik', sans-serif;
 }
+
 .cooking-status-text {
   color: #7df9ff;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: bold;
-  text-align: center;
+  margin-bottom: 6px;
 }
+
 .cooking-bar {
-  height: 4px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 2px;
+  height: 6px;
+  width: 100%;
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
   overflow: hidden;
 }
+
 .cooking-progress {
   height: 100%;
-  width: 0%; /* YOU CHANGE THIS % */
+  width: 0%; /* YOU CONTROL THIS — 0% = idle, 65% = cooking */
   background: linear-gradient(90deg, #ff6ec4, #7df9ff);
-  transition: width 1s ease;
+  border-radius: 3px;
+  transition: width 1.2s ease; /* smooth fill, no loop */
 }
 
 /* FLOATING MYSTERIOUS LETTER POPUP */
