@@ -9,23 +9,26 @@
 </head>
 <body>
 
-  <!-- STARFIELD — same as everywhere -->
+  <!-- STARFIELD -->
   <div class="stars" id="stars"></div>
 
-  <!-- THIN COOKING BAR — always visible, pulsing -->
-  <div class="cooking-bar">
-    <div class="cooking-progress"></div>
+  <!-- COOKING STATUS BAR — ONLY YOU CONTROL THIS -->
+  <div class="cooking-status-container">
+    <div class="cooking-status-text" id="cooking-text">Status: Idle</div>
+    <div class="cooking-bar">
+      <div class="cooking-progress" id="cooking-progress"></div>
+    </div>
   </div>
 
-  <!-- GAMES SPECIAL WELCOME POPUP — appears only once per session -->
+  <!-- GAMES WELCOME POPUP — once per session -->
   <div class="modal-overlay" id="games-modal">
     <div class="modal">
       <h2>Games Realm</h2>
       <p>Even you can give me a game idea/concept,<br>
       and I'll make my time worth to make it.<br>
       Gimme just 3 days and I'll be done.</p>
-      <p>If I am cooking any game, the thin loading bar at the top will pulse faster.<br>
-      If not, it'll still be there — but idle.</p>
+      <p>When I'm cooking a game, you'll see a progress bar at the top.<br>
+      Otherwise — it's idle, waiting for your ideas.</p>
       <p style="margin-top:20px;">
         samratvkamble@proton.me<br>
         IG: dark_sam_v15.81 / SamWasFound
@@ -36,7 +39,7 @@
 
   <header class="realm-header">
     <h1 class="realm-title">Games</h1>
-    <p class="realm-subtitle">APKs · ROMs · Mods · Ideas</p>
+    <p class="realm-subtitle">APKs · ROMs · Mods · Cooking in Progress</p>
   </header>
 
   <main class="container">
@@ -95,7 +98,6 @@
 
       feed.innerHTML = "";
 
-      // Breadcrumb
       if (currentFolder) {
         const parts = currentFolder.split("/");
         let path = "";
