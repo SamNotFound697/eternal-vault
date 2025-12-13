@@ -5,16 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Games — Realms</title>
   <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/modal.css">
 </head>
 <body>
 
-  <!-- STARFIELD — stays in every realm, looks insane -->
+  <!-- STARFIELD — same as everywhere -->
   <div class="stars" id="stars"></div>
 
-  <header class="realm-header">
-    <h1 class="realm-title">Games</h1>                 <!-- ←←← CHANGE THIS TITLE -->
-    <p class="realm-subtitle">PC games, APKs, mods, and compressed files.</p>
+  <!-- THIN COOKING BAR — always visible, pulsing -->
+  <div class="cooking-bar">
+    <div class="cooking-progress"></div>
+  </div>
 
+  <!-- GAMES SPECIAL WELCOME POPUP — appears only once per session -->
+  <div class="modal-overlay" id="games-modal">
+    <div class="modal">
+      <h2>Games Realm</h2>
+      <p>Even you can give me a game idea/concept,<br>
+      and I'll make my time worth to make it.<br>
+      Gimme just 3 days and I'll be done.</p>
+      <p>If I am cooking any game, the thin loading bar at the top will pulse faster.<br>
+      If not, it'll still be there — but idle.</p>
+      <p style="margin-top:20px;">
+        samratvkamble@proton.me<br>
+        IG: dark_sam_v15.81 / SamWasFound
+      </p>
+      <button class="close-btn" onclick="closeGamesModal()">Enter</button>
+    </div>
+  </div>
+
+  <header class="realm-header">
+    <h1 class="realm-title">Games</h1>
+    <p class="realm-subtitle">APKs · ROMs · Mods · Ideas</p>
   </header>
 
   <main class="container">
@@ -26,7 +48,7 @@
     <div id="feed" class="feed-grid"></div>
   </main>
 
-  <!-- STARFIELD GENERATOR — runs once per page load -->
+  <!-- STARFIELD SCRIPT -->
   <script>
     const s = document.getElementById('stars');
     for(let i = 0; i < 150; i++){
@@ -40,18 +62,29 @@
     }
   </script>
 
+  <!-- GAMES MODAL SCRIPT -->
+  <script>
+    if (!sessionStorage.getItem('gamesModalShown')) {
+      document.getElementById('games-modal').classList.add('active');
+      sessionStorage.setItem('gamesModalShown', 'true');
+    }
+    function closeGamesModal() {
+      document.getElementById('games-modal').classList.remove('active');
+    }
+  </script>
+
   <!-- MAIN REALM LOGIC -->
   <script type="module">
     import { listFolders, listFiles, createFolder, fileURL } from "../assets/main.js";
 
-    const REALM = "games";                 // ←←← CHANGE THIS FOR EACH REALM
+    const REALM = "games";
     const feed = document.getElementById("feed");
 
     const urlParams = new URLSearchParams(location.search);
     const currentFolder = urlParams.get("folder") || "";
 
     document.querySelector(".realm-title").textContent = 
-      currentFolder ? currentFolder.split("/").pop() : REALM.charAt(0).toUpperCase() + REALM.slice(1);
+      currentFolder ? currentFolder.split("/").pop() : "Games";
 
     async function load() {
       feed.innerHTML = "<div class='empty'>Loading…</div>";
@@ -77,7 +110,7 @@
         const a = document.createElement("a");
         a.className = "folder-card";
         a.href = `?folder=${currentFolder ? currentFolder + "/" : ""}${f.name}`;
-        a.innerHTML = `<span class="folder-icon">Folder</span><span>${f.name}</span>`;
+        a.innerHTML = `<span class="folder-icon">🎮</span><span>${f.name}</span>`;
         feed.appendChild(a);
       });
 
@@ -91,7 +124,7 @@
         card.innerHTML = `
           ${isImage ? `<img src="${url}" loading="lazy">` : 
             isVideo ? `<video src="${url}" loop muted playsinline preload="metadata"></video>` : 
-            `<div class="file-icon">File</div>`}
+            `<div class="file-icon">🎮</div>`}
           <div class="file-name">${f.name}</div>
         `;
         card.onclick = () => window.open(url, "_blank");
@@ -99,7 +132,7 @@
       });
 
       if (folders.length === 0 && files.length === 0) {
-        feed.innerHTML = "<div class='empty'>This folder is empty — be the first!</div>";
+        feed.innerHTML = "<div class='empty'>This folder is empty — drop some games!</div>";
       }
     }
 
@@ -118,4 +151,3 @@
   </script>
 </body>
 </html>
-
