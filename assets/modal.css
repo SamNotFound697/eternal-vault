@@ -1,38 +1,3 @@
-/* COOKING STATUS BAR — STATIC WHEN IDLE, FILLS WHEN COOKING, ONLY BY ME! */
-.cooking-status-container {
-  position: fixed;
-  top: 0; left: 0; width: 100%;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(8px);
-  padding: 10px 20px;
-  z-index: 1000;
-  text-align: center;
-  font-family: 'Rubik', sans-serif;
-}
-
-.cooking-status-text {
-  color: #7df9ff;
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.cooking-bar {
-  height: 6px;
-  width: 100%;
-  background: rgba(255,255,255,0.15);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.cooking-progress {
-  height: 100%;
-  width: 0%; /* YOU CONTROL THIS — 0% = idle, 65% = cooking */
-  background: linear-gradient(90deg, #ff6ec4, #7df9ff);
-  border-radius: 3px;
-  transition: width 1.2s ease; /* smooth fill, no loop */
-}
-
 /* FLOATING MYSTERIOUS LETTER POPUP */
 .letter-overlay {
   position: fixed;
@@ -58,7 +23,7 @@
   padding: 40px 50px;
   max-width: 600px;
   width: 90%;
-  box-shadow: 
+  box-shadow:
     0 0 40px rgba(255,107,196,0.4),
     inset 0 0 20px rgba(125,249,255,0.1);
   position: relative;
@@ -84,23 +49,6 @@
   margin-bottom: 20px;
   text-shadow: 0 0 20px #7df9ff;
 }
-.close-letter {
-  margin-top: 40px;
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(90deg, #ff6ec4, #7df9ff);
-  color: #000;
-  border: none;
-  border-radius: 14px;
-  font-weight: bold;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.close-letter:hover {
-  transform: scale(1.03);
-  box-shadow: 0 10px 30px rgba(255,107,196,0.6);
-}
 @keyframes letterFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -109,7 +57,51 @@
   from { opacity: 0.4; }
   to { opacity: 0.8; }
 }
-/* MODAL / WELCOME LETTER */
+
+/* CLOSE LETTER BUTTON — FULLY ANIMATED */
+.close-letter {
+  margin-top: 40px;
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(90deg, #ff6ec4, #7df9ff);
+  color: #000;
+  border: none;
+  border-radius: 18px;
+  font-weight: bold;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  box-shadow: 0 10px 30px rgba(255,107,196,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.close-letter::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.7s;
+}
+.close-letter:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(255,107,196,0.8);
+}
+.close-letter:hover::before {
+  left: 100%;
+}
+.close-letter svg {
+  transition: transform 0.4s;
+}
+.close-letter:hover svg {
+  transform: translateX(8px);
+}
+
+/* GENERAL MODAL (for Games popup etc.) */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -189,69 +181,34 @@
   transition: width 0.3s;
 }
 
-/* GAMES REALM — THIN COOKING BAR */
-.cooking-bar {
+/* COOKING STATUS BAR — STATIC WHEN IDLE, SMOOTH FILL WHEN COOKING */
+.cooking-status-container {
   position: fixed;
   top: 0; left: 0; width: 100%;
-  height: 4px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  padding: 10px 20px;
   z-index: 1000;
+  text-align: center;
+  font-family: 'Rubik', sans-serif;
+}
+.cooking-status-text {
+  color: #7df9ff;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+.cooking-bar {
+  height: 6px;
+  width: 100%;
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
   overflow: hidden;
 }
 .cooking-progress {
   height: 100%;
-  width: 0%;
+  width: 0%; /* Idle by default */
   background: linear-gradient(90deg, #ff6ec4, #7df9ff);
-  animation: cookingPulse 3s infinite linear;
-}
-@keyframes cookingPulse {
-  0% { width: 0%; }
-  100% { width: 100%; }
-}
-
-.close-letter {
-  margin-top: 40px;
-  width: 100%;
-  padding: 18px;
-  background: linear-gradient(90deg, #ff6ec4, #7df9ff);
-  color: #000;
-  border: none;
-  border-radius: 18px;
-  font-weight: bold;
-  font-size: 1.3rem;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  box-shadow: 0 10px 30px rgba(255,107,196,0.5);
-  position: relative;
-  overflow: hidden;
-}
-
-.close-letter::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  transition: left 0.7s;
-}
-
-.close-letter:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 50px rgba(255,107,196,0.8);
-}
-
-.close-letter:hover::before {
-  left: 100%;
-}
-
-.close-letter svg {
-  transition: transform 0.4s;
-}
-
-.close-letter:hover svg {
-  transform: translateX(8px);
+  border-radius: 3px;
+  transition: width 1.5s ease-in-out; /* One-time smooth fill */
 }
